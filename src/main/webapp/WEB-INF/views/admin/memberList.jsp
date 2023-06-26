@@ -120,7 +120,7 @@
 			
 			if(confirm("회원권한을 정말 수정하시겠습니까?")) {
 				const memberRoleVal = e.target.value;
-				const memberIdVal = e.target.dataset.memberId;				
+				const memberIdVal = e.target.dataset.memberId;			
 			
 				const frm = document.memberRoleUpdateFrm;
 				frm.memberRole.value = memberRoleVal;
