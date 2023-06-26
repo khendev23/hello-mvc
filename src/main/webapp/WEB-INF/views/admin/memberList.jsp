@@ -13,12 +13,12 @@
 %>
 <!-- 관리자용 admin.css link -->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/admin.css" />
-   <style>
-    div#search-container 	{width: 100%; margin:0 0 10px 0; padding:3px; background-color: rgba(0, 188, 212, 0.3);}
-    div#search-memberId 	{display: <%= searchType == null || "member_id".equals(searchType) ? "inline-block" : "none" %>;}
-    div#search-name			{display: <%= "name".equals(searchType) ? "inline-block" : "none" %>;}
-    div#search-gender		{display: <%= "gender".equals(searchType) ? "inline-block" : "none" %>;}
-    </style>
+<style>
+	div#search-container 	{width: 100%; margin:0 0 10px 0; padding:3px; background-color: rgba(0, 188, 212, 0.3);}
+	div#search-memberId 	{display: <%= searchType == null || "member_id".equals(searchType) ? "inline-block" : "none" %>;}
+	div#search-name			{display: <%= "name".equals(searchType) ? "inline-block" : "none" %>;}
+	div#search-gender		{display: <%= "gender".equals(searchType) ? "inline-block" : "none" %>;}
+</style>
 <section id="memberList-container">
 	<h2>회원관리</h2>
 	 <div id="search-container">
@@ -102,7 +102,8 @@
 	<input type="hidden" name="memberId"/>
 </form>
 <script>
-
+	
+	// searchType에 맞는 입력창 띄우기
 	document.querySelector("select#searchType").onchange = (e) => {
 		console.log(e.target.value);
 		// 일단 다 숨겨
@@ -113,7 +114,7 @@
 	};
 	
 	
-	//
+	// 회원권한 수정 스크립트
 	document.querySelectorAll(".member-role").forEach((elem) => {
 		elem.addEventListener("change", (e) => {
 			// console.log(e.target.dataset); // 작성한 date태그를 보관하는 맵(Key-Value)
