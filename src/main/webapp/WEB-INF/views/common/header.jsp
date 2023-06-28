@@ -126,7 +126,7 @@ window.onload = () => {
 				<ul class="main-nav">
 					<li class="home"><a href="<%= request.getContextPath() %>">Home</a></li>
 					<li class="notice"><a href="#">공지사항</a></li>
-					<li class="board"><a href="#">게시판</a></li>
+					<li class="board"><a href="<%= request.getContextPath() %>/board/boardList">게시판</a></li>
 					<%-- 관리자로 로그인한 경우만 노출 --%>
 					<%  if(loginMember != null && loginMember.getMemberRole() == MemberRole.A) { %>
 						<li class="admin"><a href="<%= request.getContextPath() %>/admin/memberList">회원목록</a></li>
