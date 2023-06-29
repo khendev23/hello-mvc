@@ -272,7 +272,7 @@ values(seq_attachment_no.nextval, 60, 'test.txt', '20211007_233014432_12345.txt'
 
 commit;
 
-select * from board;
+select * from board order by no desc;
 select * from attachment;
 
 -- 게시글-첨부파일 조회
@@ -281,4 +281,38 @@ select
    *
 from
     board b left join attachment a
-        on b.no = a.board_no
+        on b.no = a.board_no;
+        
+-- select b.*,  (select count(*) from attachment where board_no = b.no) attach_cnt from board b order by b.no desc
+
+-- 페이징 처리
+-- row_number() over()
+-- 1페이지 1 ~ 10
+-- 2페이지 11 ~ 20
+-- 3페이지 21 ~ 30
+-- 4페이지 31 ~ 40
+-- 5페이지 41 ~ 50
+-- 6페이지 51 ~ 60
+
+select
+    *
+from(
+    select 
+        row_number() over(order by b.no desc) rnum,
+        b.*,  
+        (select count(*) from attachment where  board_no = b.no) attach_cnt 
+    from 
+        board b
+)  b
+where
+    rnum between 1 and 10;
+
+-- select * from(    select  row_number() over(order by b.no desc) rnum,   b.*,  (select count(*) from attachment where  board_no = b.no) attach_cnt  from    board b)  b where  rnum between ? and ?
+
+-- 전체 게시물수 구하기
+select count(*) from board;
+
+delete from board where no=0;
+
+-- 첨부파일 테이블
+select * from attachment;

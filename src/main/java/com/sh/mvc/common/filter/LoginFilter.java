@@ -22,7 +22,8 @@ import com.sh.mvc.member.model.vo.Member;
 @WebFilter({ 
 	"/member/memberDetail", 
 	"/member/memberUpdate", 
-	"/member/memberDelete" 
+	"/member/memberDelete", 
+	"/board/boardCreate"
 })
 public class LoginFilter extends HttpFilter implements Filter {
        

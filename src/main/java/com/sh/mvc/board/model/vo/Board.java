@@ -1,83 +1,51 @@
 package com.sh.mvc.board.model.vo;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Board extends Attachment{
+public class Board extends BoardEntity {
 
-	private int no;
-	private String title;
-	private String writer;
-	private String content;
-	private int readCount;
-	private Date regDate;
-	
+	private int attachCnt;
+	private List<Attachment> attachments = new ArrayList<>();
+
 	public Board() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public Board(int no, String title, String writer, String content, int readCount, Date regDate, String originalFilename, String renamedFilename) {
-		super(originalFilename, renamedFilename);
-		this.no = no;
-		this.title = title;
-		this.writer = writer;
-		this.content = content;
-		this.readCount = readCount;
-		this.regDate = regDate;
+	public Board(int no, String title, String writer, String content, int readCount, Date regDate, int attachCnt) {
+		super(no, title, writer, content, readCount, regDate);
+		this.attachCnt = attachCnt;
 	}
 
-	public int getNo() {
-		return no;
+	public int getAttachCnt() {
+		return attachCnt;
 	}
 
-	public void setNo(int no) {
-		this.no = no;
+	public void setAttachCnt(int attachCnt) {
+		this.attachCnt = attachCnt;
 	}
 
-	public String getTitle() {
-		return title;
+	public List<Attachment> getAttachments() {
+		return attachments;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setAttachments(List<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 
-	public String getWriter() {
-		return writer;
+	public void addAttachment(Attachment attach) {
+		if(attach != null)
+			this.attachments.add(attach);
 	}
-
-	public void setWriter(String writer) {
-		this.writer = writer;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public int getReadCount() {
-		return readCount;
-	}
-
-	public void setReadCount(int readCount) {
-		this.readCount = readCount;
-	}
-
-	public Date getRegDate() {
-		return regDate;
-	}
-
-	public void setRegDate(Date regDate) {
-		this.regDate = regDate;
-	}
-
+	
 	@Override
 	public String toString() {
-		return "Board [no=" + no + ", title=" + title + ", writer=" + writer + ", content=" + content + ", readCount="
-				+ readCount + ", regDate=" + regDate + "]";
+		return "Board [attachCnt=" + attachCnt + ", attachments=" + attachments + ", toString()=" + super.toString()
+				+ "]";
 	}
+
 	
 	
 	

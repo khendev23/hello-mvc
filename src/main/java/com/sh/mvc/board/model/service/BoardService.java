@@ -1,7 +1,9 @@
 package com.sh.mvc.board.model.service;
 
 import static com.sh.mvc.common.JdbcTemplate.close;
+import static com.sh.mvc.common.JdbcTemplate.commit;
 import static com.sh.mvc.common.JdbcTemplate.getConnection;
+import static com.sh.mvc.common.JdbcTemplate.rollback;
 
 import java.sql.Connection;
 import java.util.List;
@@ -13,12 +15,61 @@ import com.sh.mvc.board.model.vo.Board;
 public class BoardService {
 	private final BoardDao boardDao = new BoardDao();
 
-	public List<Board> findAll() {
+	public List<Board> findAll(int start, int end) {
 		Connection conn = getConnection();
-		List<Board> boards = boardDao.findAll(conn);
+		List<Board> boards = boardDao.findAll(conn, start, end);
 		close(conn);
 		
 		return boards;
+	}
+
+	public int getTotalContent() {
+		int result = 0;
+		Connection conn = getConnection();
+		try {
+			result = boardDao.getTotalContent(conn);
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		
+		return result;
+	}
+
+	public int insertBoard(Board board) {
+		int result = 0;
+		Connection conn = getConnection();
+		try {
+			// board테이블 추가
+			result = boardDao.insertBoard(conn, board);
+			
+			// 발급된 board.no를 조회
+			int boardNo = boardDao.getLastBoardNo(conn);
+			System.out.println("boardNo = " + boardNo);
+			
+			// attachment 테이블 추가
+			List<Attachment> attachments = board.getAttachments();
+			if(attachments != null && !attachments.isEmpty()) {
+				for(Attachment attach : attachments) {
+					// insert into attachment values (seq_attachment_no.nextval, )
+					attach.setBoardNo(boardNo); // fk컬럼값 세팅
+					result = boardDao.insertAttachment(conn, attach);
+					System.out.println("result = " + result);
+				}
+			}
+			
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		
+		return result;
 	}
 
 
