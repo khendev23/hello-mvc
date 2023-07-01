@@ -96,7 +96,7 @@ public class BoardCreateServlet extends HttpServlet {
 		session.setAttribute("msg", "게시판 등록이 완료되었습니다.");
 		
 		// 3. 인덱스페이지 리다이렉트
-		response.sendRedirect(request.getContextPath() + "/board/boardList");
+		response.sendRedirect(request.getContextPath() + "/board/boardDetail?no=" + board.getNo());
 	}
 
 }

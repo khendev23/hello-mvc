@@ -56,6 +56,11 @@ public class BoardListServlet extends HttpServlet {
 		List<Board> boards = boardService.findAll(start, end);
 		request.setAttribute("boards", boards);
 		
+		// xss공격대비처리
+		for(Board board : boards) {
+			board.setTitle(HelloMvcUtils.escapeHtml(board.getTitle()));
+		}
+		
 		// 페이지바 영역 처리
 		int totalContent = boardService.getTotalContent();
 		System.out.println("totalContent = " + totalContent);

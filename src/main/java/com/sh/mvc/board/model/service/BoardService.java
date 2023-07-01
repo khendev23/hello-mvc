@@ -48,6 +48,7 @@ public class BoardService {
 			
 			// 발급된 board.no를 조회
 			int boardNo = boardDao.getLastBoardNo(conn);
+			board.setNo(boardNo); // servlet에서 redirect시 사용
 			System.out.println("boardNo = " + boardNo);
 			
 			// attachment 테이블 추가
@@ -69,6 +70,56 @@ public class BoardService {
 			close(conn);
 		}
 		
+		return result;
+	}
+
+	public Board findById(int no) {
+		Connection conn = getConnection();
+		Board board = boardDao.findbyId(conn, no);
+		List<Attachment> attachments = boardDao.findAttachmentByBoardNo(conn, no);
+		board.setAttachments(attachments);
+		close(conn);
+		
+		return board;
+	}
+
+	public int updateReadCount(int no) {
+		Connection conn = getConnection();
+		int result = 0;
+		try {
+			result = boardDao.updateReadCount(conn, no);		
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		return result;
+	}
+
+	public Attachment findAttachmentById(int no) {
+		Connection conn = getConnection();
+		
+		Attachment attach = boardDao.findAttachmentById(conn, no);
+		close(conn);
+		
+		return attach;
+	}
+
+	public int deleteBoardById(String _no) {
+		Connection conn = getConnection();
+		int no = Integer.parseInt(_no);
+		int result = 0;
+		try {
+			result = boardDao.deleteBoardById(conn, no);		
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
 		return result;
 	}
 

@@ -45,7 +45,7 @@
 */
 document.boardCreateFrm.onsubmit = (e) => {
 	const frm = e.target;
-	copnst title = e.target.title;
+	const title = e.target.title;
 	const content = e.target.content;
 	
 	//제목을 작성하지 않은 경우 폼제출할 수 없음.
@@ -57,10 +57,10 @@ document.boardCreateFrm.onsubmit = (e) => {
 	
 	//내용을 작성하지 않은 경우 폼제출할 수 없음.
 	if (!/^(.|\n)+$/.test(content.value)) {
-		alert('내용을 작성해주세요')
+		alert('내용을 작성해주세요');
 		return false;
 	}
-	//return true;
+	return true;
 }
 </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>

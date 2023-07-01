@@ -3,11 +3,9 @@ package com.sh.mvc.board.model.dao;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -15,12 +13,7 @@ import java.util.Properties;
 import com.sh.mvc.board.model.exception.BoardException;
 import com.sh.mvc.board.model.vo.Attachment;
 import com.sh.mvc.board.model.vo.Board;
-import com.sh.mvc.board.model.vo.BoardEntity;
-import com.sh.mvc.member.model.dao.MemberDao;
-import com.sh.mvc.member.model.exception.MemberException;
-import com.sh.mvc.member.model.vo.Gender;
-import com.sh.mvc.member.model.vo.Member;
-import com.sh.mvc.member.model.vo.MemberRole;
+
 
 public class BoardDao {
 	
@@ -50,6 +43,7 @@ public class BoardDao {
 			try(ResultSet rset = pstmt.executeQuery()) {
 				while(rset.next()) {
 					Board board = handleBoardResultSet(rset);
+					board.setAttachCnt(rset.getInt("attach_cnt")); // 별도로 추가
 					boards.add(board);
 				}				
 			}
@@ -63,15 +57,15 @@ public class BoardDao {
 	}
 
 	private Board handleBoardResultSet(ResultSet rset) throws SQLException {
-		int no = rset.getInt("no");
-		String title = rset.getString("title");
-		String writer = rset.getString("writer");
-		String content = rset.getString("content");
-		int readCount = rset.getInt("read_count");
-		Date regDate = rset.getDate("reg_date");
-		int attachCnt = rset.getInt("attach_cnt");
-		
-		return new Board(no, title, writer, content, readCount, regDate, attachCnt);
+		Board board = new Board();
+		board.setNo(rset.getInt("no"));
+		board.setTitle(rset.getString("title"));
+		board.setWriter(rset.getString("writer"));
+		board.setContent(rset.getString("content"));
+		board.setReadCount(rset.getInt("read_count"));
+		board.setRegDate(rset.getDate("reg_date"));
+			
+		return board;
 	}
 
 	public int getTotalContent(Connection conn) {
@@ -101,7 +95,7 @@ public class BoardDao {
 			pstmt.setString(3, board.getContent());
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new MemberException(e);
+			throw new BoardException(e);
 		}
 		return result;
 	}
@@ -135,6 +129,102 @@ public class BoardDao {
 		} catch (SQLException e) {
 			throw new BoardException();
 		}
+		return result;
+	}
+
+	public Board findbyId(Connection conn, int no) {
+		Board board = null;
+		String sql = prop.getProperty("findById");
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			try (ResultSet rset = pstmt.executeQuery()) {
+				while(rset.next()) {
+					board = handleBoardResultSet(rset);
+					
+				}
+			}
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		return board;
+	}
+
+	public List<Attachment> findAttachmentByBoardNo(Connection conn, int boardNo) {
+		List<Attachment> attachments = new ArrayList<>();
+		String sql = prop.getProperty("findAttachmentByBoardNo");
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, boardNo);
+			try (ResultSet rset = pstmt.executeQuery()) {
+				while(rset.next()) {
+					Attachment attach = handleAttachmentResultSet(rset);
+					attachments.add(attach);
+				}
+			}
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		
+		return attachments;
+	}
+
+	private Attachment handleAttachmentResultSet(ResultSet rset) throws SQLException {
+		Attachment attach = new Attachment();
+		attach.setNo(rset.getInt("no"));
+		attach.setBoardNo(rset.getInt("board_no"));
+		attach.setOriginalFilename(rset.getString("original_filename"));
+		attach.setRenamedFilename(rset.getString("renamed_filename"));
+		attach.setRegDdate(rset.getDate("reg_date"));
+		return attach;
+	}
+
+	public int updateReadCount(Connection conn, int no) {
+		int result = 0;
+		String sql = prop.getProperty("updateReadCount");
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		return result;
+	}
+
+	public Attachment findAttachmentById(Connection conn, int no) {
+		Attachment attach = null;
+		String sql = prop.getProperty("findAttachmentById");
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			try(ResultSet rset = pstmt.executeQuery()) {
+				while(rset.next()) {
+					attach = handleAttachmentResultSet(rset);
+				}
+			}
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		
+		return attach;
+	}
+
+	public int deleteBoardById(Connection conn, int no) {
+		int result = 0;
+		String sql = prop.getProperty("deleteBoardById");
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
 		return result;
 	}
 

@@ -28,7 +28,9 @@
 			for(Board board : boards) { %>
 		<tr>
 			<td><%= board.getNo() %> </td>		
-			<td><%= board.getTitle() %> </td>		
+			<td>
+				<a href="<%= request.getContextPath() %>/board/boardDetail?no=<%= board.getNo() %>"><%= board.getTitle() %></a>
+			</td>		
 			<td><%= board.getWriter() %> </td>
 			<td><%= board.getRegDate() %> </td>		
 			<td>

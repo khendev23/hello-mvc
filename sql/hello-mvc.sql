@@ -316,3 +316,8 @@ delete from board where no=0;
 
 -- 첨부파일 테이블
 select * from attachment;
+select * from board order by no desc;
+-- 게시글 조회
+select * from board where no = 62;
+-- 게시글번호로 첨부파일 조회
+select * from attachment where board_no=65;
