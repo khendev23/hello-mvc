@@ -321,3 +321,80 @@ select * from board order by no desc;
 select * from board where no = 62;
 -- 게시글번호로 첨부파일 조회
 select * from attachment where board_no=65;
+
+update board set title = 'ㅋㅋㅋㅋㅋ', content=2 where no = 75;
+
+--=======================================
+-- 댓글
+--========================================
+-- 댓글테이블
+
+create table board_comment (
+    no number, -- pk
+    comment_level number default 1, -- 1.댓글 2.대댓글
+    writer varchar2(20),
+    content varchar2(4000),
+    board_no number,
+    comment_ref number, -- 댓글인경우 null  대댓글인경우 board_comment.no
+    reg_date date default sysdate,
+    constraints pk_board_comment_no primary  key(no),
+    constraints fk_board_comment_writer foreign key(writer) references member(member_id) on delete set null,
+    constraints fk_board_comment_board_no foreign key(board_no) references board(no) on delete cascade,
+    constraints fk_board_comment_ref foreign key(comment_ref) references board_comment(no) on delete cascade
+);
+
+create sequence seq_board_comment_no;
+
+-- 최신 게시글
+select * from member;
+
+select * from board_comment where board_no = 81;
+
+-- 댓글 추가
+insert into board_comment values(seq_board_comment_no.nextval, 1, 'qwerty', '따뜻한 글 잘 읽었습니다.', 81, null, default);
+
+insert into
+    board_comment
+values (
+    seq_board_comment_no.nextval, 1, 'sejong', '훈훈한 글 잘읽었습니다.', 81, null, default);
+    
+insert into
+    board_comment
+values (
+    seq_board_comment_no.nextval, 1, 'admin', '주간 게시글로 선정되셨습니다. 축하드립니다.', 81, null, default);
+    
+insert into
+    board_comment
+values (
+    seq_board_comment_no.nextval, 2, 'admin', '주간 댓글로 선정되셨습니다. 축하드립니다.', 81, 1, default);
+    
+insert into
+    board_comment
+values (
+    seq_board_comment_no.nextval, 2, 'opqr', '저도 동감입니다 2222', 81, 1, default);
+    
+insert into
+    board_comment
+values (
+    seq_board_comment_no.nextval, 1, 'honggd', '어!', 81, 1, default);
+
+update board_comment set comment_ref = 2 where no = 7;
+-- 계층형 쿼리
+-- start with, connect by절을 통해 행간의 부모자식관계를 지정
+-- 댓글, 대댓글 사이의 연결된 형태로 쿼리를 질의
+
+select
+    *
+from
+    board_comment
+where
+    board_no = 81
+start with
+    comment_level = 1
+connect by
+    prior no = comment_ref
+order siblings by
+    no;
+
+select * from member where member_id = 'honggd';
+insert into board_comment values (seq_board_comment_no.nextval, ?, ?, ?, ?, ?, default)

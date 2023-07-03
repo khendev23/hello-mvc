@@ -3,6 +3,7 @@ package com.sh.mvc.board.model.dao;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.Properties;
 import com.sh.mvc.board.model.exception.BoardException;
 import com.sh.mvc.board.model.vo.Attachment;
 import com.sh.mvc.board.model.vo.Board;
+import com.sh.mvc.board.model.vo.BoardComment;
 
 
 public class BoardDao {
@@ -226,6 +228,91 @@ public class BoardDao {
 		}
 		
 		return result;
+	}
+
+	public int updateBoard(Connection conn, Board board) {
+		int result = 0;
+		String sql = prop.getProperty("updateBoard");
+		// update board set title =?, content =? where no = ?
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, board.getTitle());
+			pstmt.setString(2, board.getContent());
+			pstmt.setInt(3, board.getNo());
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		return result;
+	}
+
+	public int deleteAttachment(Connection conn, int no) {
+		int result = 0;
+		String sql = prop.getProperty("deleteAttachment");
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException();
+		}
+		
+		return result;
+	}
+
+	public int insertBoardComment(Connection conn, BoardComment boardComment) {
+	      int result = 0;
+	      String sql = prop.getProperty("insertBoardComment");
+	      // insert into board_comment values(seq_board_comment_no.nextval, ?, ?, ?, ?, ?, default)
+	      
+	      try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	         pstmt.setInt(1, boardComment.getCommentLevel());
+	         pstmt.setString(2, boardComment.getWriter());
+	         pstmt.setString(3, boardComment.getContent());
+	         pstmt.setInt(4, boardComment.getBoardNo());
+	         pstmt.setObject(5, boardComment.getCommentRef() != 0 ? boardComment.getCommentRef() : null);
+	         // int 는 null값을 줄수없기 때문에 setObject 사용.
+	         
+	         result = pstmt.executeUpdate();
+	         
+	      } catch (SQLException e) {
+	         throw new BoardException(e);
+	      }
+	      
+	      return result;
+	   }
+
+	public List<BoardComment> findBoardCommentByBoardNo(Connection conn, int no) {
+		List<BoardComment> boardComments = new ArrayList<>();
+		String sql = prop.getProperty("findBoardCommentByBoardNo");
+		
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, no);
+			try(ResultSet rset = pstmt.executeQuery()) {
+				while(rset.next()) {
+					BoardComment boardComment = handleboardCommentsResultSet(rset);
+					boardComments.add(boardComment);
+				}
+			}
+		} catch (SQLException e) {
+			throw new BoardException(e);
+		}
+		
+		
+		return boardComments;
+	}
+
+	private BoardComment handleboardCommentsResultSet(ResultSet rset) throws SQLException {
+		int no = rset.getInt("no");
+		int commentLevel = rset.getInt("comment_level");
+		String writer = rset.getString("writer");
+		String content = rset.getString("content");
+		int boardNo = rset.getInt("board_no");
+		int commentRef = rset.getInt("comment_ref"); // null인 경우, 0이 반환
+		Date regDate = rset.getDate("reg_date");
+		
+		return new BoardComment(no, commentLevel, writer, content, boardNo, commentRef, regDate);
 	}
 
 }

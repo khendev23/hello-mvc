@@ -1,6 +1,8 @@
 package com.sh.mvc.board.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sh.mvc.board.model.service.BoardService;
 import com.sh.mvc.board.model.vo.Board;
+import com.sh.mvc.board.model.vo.BoardComment;
 import com.sh.mvc.common.util.HelloMvcUtils;
 
 /**
@@ -57,7 +60,9 @@ public class BoardDetailServlet extends HttpServlet {
 			response.addCookie(cookie); // Set-Cookie : boardCookie=[10][20]
 		}
 		Board board = boardService.findById(no); // board, List<Attachment>
+		List<BoardComment> boardComments = boardService.findBoardCommentByBoardNo(no);
 		System.out.println("board = " + board);
+		System.out.println("boardComments = " + boardComments);
 		
 		// 2-1 Secure Coding 처리
 		String unsecureTitle = board.getTitle();
@@ -66,6 +71,7 @@ public class BoardDetailServlet extends HttpServlet {
 		
 		// 3. 응답처리 jsp
 		request.setAttribute("board", board);
+		request.setAttribute("boardComments", boardComments);
 		request.getRequestDispatcher("/WEB-INF/views/board/boardDetail.jsp").forward(request, response);
 	}
 

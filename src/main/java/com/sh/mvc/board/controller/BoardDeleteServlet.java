@@ -24,15 +24,11 @@ public class BoardDeleteServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 사용자 입력값 처리
-		int no = Integer.parseInt(request.getParameter("no"));
-		System.out.println("no = " + no);
-		HttpSession session = request.getSession();
-		Board board = (Board) session.getAttribute("board");
-		System.out.println("Board = " + board);
-		// int no = board.getNo();
+		int no = Integer.parseInt(request.getParameter("deleteBoardNo"));
 		
 		// 2. 업무로직
-		//int result = boardService.deleteBoardById(no);
+		int result = boardService.deleteBoardById(no);
+		HttpSession session = request.getSession();
 		
 		//3. 리다이렉트 처리
 		session.setAttribute("msg", "삭제되었습니다.");

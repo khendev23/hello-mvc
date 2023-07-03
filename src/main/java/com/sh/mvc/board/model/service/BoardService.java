@@ -11,6 +11,7 @@ import java.util.List;
 import com.sh.mvc.board.model.dao.BoardDao;
 import com.sh.mvc.board.model.vo.Attachment;
 import com.sh.mvc.board.model.vo.Board;
+import com.sh.mvc.board.model.vo.BoardComment;
 
 public class BoardService {
 	private final BoardDao boardDao = new BoardDao();
@@ -107,9 +108,8 @@ public class BoardService {
 		return attach;
 	}
 
-	public int deleteBoardById(String _no) {
+	public int deleteBoardById(int no) {
 		Connection conn = getConnection();
-		int no = Integer.parseInt(_no);
 		int result = 0;
 		try {
 			result = boardDao.deleteBoardById(conn, no);		
@@ -121,6 +121,70 @@ public class BoardService {
 			close(conn);
 		}
 		return result;
+	}
+
+	public int updateBoard(Board board) {
+	      int result = 0;
+	      Connection conn = getConnection();
+	      try {
+	         
+	         // board 테이블 추가
+	         result = boardDao.updateBoard(conn, board);
+	         
+	         // attachment 테이블 추가
+	         List<Attachment> attachments = board.getAttachments();
+	         if (attachments != null && !attachments.isEmpty()) {
+	            for(Attachment attach : attachments) {
+	               result = boardDao.insertAttachment(conn, attach);               
+	            }
+	         }
+	         commit(conn);
+	      } catch (Exception e) {
+	         rollback(conn);
+	         throw e;
+	      } finally {
+	         close(conn);
+	      }
+	      
+	      return result;
+	   }
+
+	public int deleteAttachment(int no) {
+		Connection conn = getConnection();
+		int result = 0;
+		try {
+			result = boardDao.deleteAttachment(conn, no);		
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		return result;
+	}
+
+	public int insertBoardComment(BoardComment boardComment) {
+		Connection conn = getConnection();
+		int result = 0;
+		try {
+			result = boardDao.insertBoardComment(conn, boardComment);		
+			commit(conn);
+		} catch (Exception e) {
+			rollback(conn);
+			throw e;
+		} finally {
+			close(conn);
+		}
+		return result;
+	}
+
+	public List<BoardComment> findBoardCommentByBoardNo(int no) {
+		Connection conn = getConnection();
+		List<BoardComment> boardComment = boardDao.findBoardCommentByBoardNo(conn, no);
+		close(conn);
+		
+		return boardComment;
 	}
 
 
