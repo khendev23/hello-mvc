@@ -23,7 +23,8 @@ import com.sh.mvc.member.model.vo.Member;
 	"/member/memberDetail", 
 	"/member/memberUpdate", 
 	"/member/memberDelete", 
-	"/board/boardCreate"
+	"/board/boardCreate", "/board/boardCommentCreate",
+	"/board/boardCommentUpdate"
 })
 public class LoginFilter extends HttpFilter implements Filter {
        

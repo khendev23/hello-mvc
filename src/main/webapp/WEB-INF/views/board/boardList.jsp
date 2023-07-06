@@ -27,9 +27,10 @@
 		<% if(boards != null && !boards.isEmpty()) { 
 			for(Board board : boards) { %>
 		<tr>
-			<td><%= board.getNo() %> </td>		
+			<td><%= board.getNo() %></td>		
 			<td>
 				<a href="<%= request.getContextPath() %>/board/boardDetail?no=<%= board.getNo() %>"><%= board.getTitle() %></a>
+				<%= board.getCommentCnt() > 0? "["+board.getCommentCnt()+"]" : ""%>
 			</td>		
 			<td><%= board.getWriter() %> </td>
 			<td><%= board.getRegDate() %> </td>		

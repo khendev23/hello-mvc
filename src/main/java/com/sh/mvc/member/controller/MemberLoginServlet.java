@@ -110,7 +110,9 @@ public class MemberLoginServlet extends HttpServlet {
 			session.setAttribute("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
 		// 3. 응답처리
-		response.sendRedirect(request.getContextPath() + "/"); // redirect를 통한 url변경
+//		response.sendRedirect(request.getContextPath() + "/"); // redirect를 통한 url변경
+		String referer = request.getHeader("Referer");
+		response.sendRedirect(referer); // /를 쓰든 http://같은 프로토콜을 쓰든 알아서 잡기 때문에 상관없다.
 	}
 
 }

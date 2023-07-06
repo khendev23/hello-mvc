@@ -46,6 +46,7 @@ public class BoardDao {
 				while(rset.next()) {
 					Board board = handleBoardResultSet(rset);
 					board.setAttachCnt(rset.getInt("attach_cnt")); // 별도로 추가
+					board.setCommentCnt(rset.getInt("comment_cnt"));
 					boards.add(board);
 				}				
 			}
@@ -313,6 +314,23 @@ public class BoardDao {
 		Date regDate = rset.getDate("reg_date");
 		
 		return new BoardComment(no, commentLevel, writer, content, boardNo, commentRef, regDate);
+	}
+
+	public int deleteBoardComment(Connection conn, int no) {
+		int result = 0;
+	      String sql = prop.getProperty("deleteBoardComment");
+	      // delete from board_comment where no = ?
+	      
+	      try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	         pstmt.setInt(1, no);
+	         
+	         result = pstmt.executeUpdate();
+	         
+	      } catch (SQLException e) {
+	         throw new BoardException(e);
+	      }
+	      
+	      return result;
 	}
 
 }

@@ -8,13 +8,14 @@ public class Board extends BoardEntity {
 
 	private int attachCnt;
 	private List<Attachment> attachments = new ArrayList<>();
-
+	private int commentCnt;
+	
 	public Board() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Board(int no, String title, String writer, String content, int readCount, Date regDate, int attachCnt) {
+	public Board(int no, String title, String writer, String content, int readCount, Date regDate, int attachCnt, int commentCnt) {
 		super(no, title, writer, content, readCount, regDate);
 		this.attachCnt = attachCnt;
 	}
@@ -40,11 +41,21 @@ public class Board extends BoardEntity {
 			this.attachments.add(attach);
 	}
 	
+	
+	
+	public int getCommentCnt() {
+		return commentCnt;
+	}
+
+	public void setCommentCnt(int commentCnt) {
+		this.commentCnt = commentCnt;
+	}
+
 	@Override
 	public String toString() {
-		return "Board [attachCnt=" + attachCnt + ", attachments=" + attachments + ", toString()=" + super.toString()
-				+ "]";
+		return "Board [attachCnt=" + attachCnt + ", attachments=" + attachments + ", commentCnt=" + commentCnt + "]";
 	}
+
 
 	
 	

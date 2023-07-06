@@ -397,4 +397,23 @@ order siblings by
     no;
 
 select * from member where member_id = 'honggd';
-insert into board_comment values (seq_board_comment_no.nextval, ?, ?, ?, ?, ?, default)
+insert into board_comment values (seq_board_comment_no.nextval, ?, ?, ?, ?, ?, default);
+
+select
+    *
+from
+    board_comment;
+delete from board_comment where no=11;
+
+-- 게시글 조회쿼리
+select 
+    * 
+from (
+    select 
+        row_number() over (order by b.no desc) rnum, 
+        b.*, 
+        (select count(*) from attachment where board_no = b.no) attach_cnt,
+        (select count(*) from board_comment where board_no = b.no) comment_cnt
+    from 
+        board b) 
+    where rnum between 1 and 10;

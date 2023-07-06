@@ -77,7 +77,7 @@
                 <button type="submit" id="btn-comment-enroll1">등록</button>
             </form>
         </div>
-        <!--table#tbl-comment-->
+        <!--table#tbl-comment : 댓글-->
         <% if(boardComments != null && !boardComments.isEmpty()) {%>
         <table id="tbl-comment">
         <%
@@ -94,7 +94,14 @@
                     <%= bc.getContent() %>
                 </td>
                 <td>
-                    <button class="btn-reply" value="댓글번호">답글</button>
+                    <button class="btn-reply" value="<%= bc.getNo()%>">답글</button>
+                    <%-- 로그인하고, 작성자 본인 또는 관리자인 경우 --%>
+                    <% if(loginMember != null && (loginMember.getMemberRole() == MemberRole.A || bc.getWriter().equals(loginMember.getMemberId()))) {%>
+		                    <button class="btn-delete" value="<%= bc.getNo()%>">삭제</button>
+                    	<form name="boardCommentDelFrm" action="<%= request.getContextPath()%>/board/boardCommentDelete" method="post">
+                    		<input type="hidden" name="commentNo" value="<%= bc.getNo()%>"/>
+						</form>
+                    <% } %>
                 </td>
             </tr>
             <% } else { %>
@@ -107,7 +114,15 @@
                     <%-- 대댓글 내용 --%>
                     <%= bc.getContent() %>
                 </td>
-                <td></td>
+                <td>
+                	<%-- 로그인하고, 작성자 본인 또는 관리자인 경우 --%>
+                	<% if(loginMember != null && (loginMember.getMemberRole()==MemberRole.A || bc.getWriter().equals(loginMember.getMemberId()))) {%>
+		                    <button class="btn-delete"value="<%= bc.getNo()%>">삭제</button>
+                		<form name="boardCommentDelFrm" action="<%= request.getContextPath()%>/board/boardCommentDelete" method="post">
+							<input type="hidden" name="commentNo" value="<%= bc.getNo()%>"/>
+						</form>
+                	<% } %>
+                </td>
             </tr>
             <% 
             	}
@@ -115,14 +130,80 @@
         </table>
         <% } %>
     </div>
-    <script>
+    <script>   
     
-    document.boardCommentFrm.content.onfocus = () => {
-        // 로그인을 하지 않고 댓글다는것을 방지하기 위해서 content박스를 포커스했을시 실행
-        <% if (loginMember == null) { %>
-           loginAlert();
-        <% } %>
-     };
+    document.querySelectorAll(".btn-delete").forEach((button) => {
+    	button.onclick = (e) => {
+    		const frm = document.boardCommentDelFrm;
+    		
+    	}
+    }
+    		
+    		
+    	
+    
+    document.querySelectorAll(".btn-reply").forEach((button) => {
+    	button.onclick = (e) => {
+    		const {value} = e.target;
+    		const parentTr = e.target.parentElement.parentElement;
+    		console.log(parentTr);
+    		
+    		const tr = `
+    			<tr>
+    				<td colspan="2">
+    					<form action="<%=request.getContextPath()%>/board/boardCommentCreate" method="post" name="boardCommentFrm" />
+    	                	<input type="hidden" name="boardNo" value="<%= board.getNo() %>" />
+    	                	<input type="hidden" name="writer" value="<%= loginMember != null? loginMember.getMemberId() : ""%>" />
+    	                	<input type="hidden" name="commentLevel" value="2" />
+    	                	<input type="hidden" name="commentRef" value="\${value}" />    
+    	                	<textarea name="content" cols="60" rows="1"></textarea>
+    	                	<button type="submit" class="btn-comment-enroll2">등록</button>
+    	           		</form>
+    				</td>
+    			</tr>
+    		`;
+    		// beforebegin 시작태그 전 - 이전 형제요소로 추가
+    		// afterbegin 시작태그 후 - 첫 자식요소로 추가
+    		// beforeend 종료태그 전 - 마지막 자식요소로 추가
+    		// afterend 종료태그 후 - 다음 형제요소로 추가
+    		parentTr.insertAdjacentHTML('afterend', tr);
+    		
+    		button.onclick = null; // 이벤트핸들러 제거 (1회용)
+    	};
+    });
+    
+    // 이벤트 버블링을 이용한 textarea focus 핸들러
+    // focus, blur 버블링되지 않음. focusin
+    document.addEventListener("focusin", (e) => {
+    	if(e.target.matches("form[name=boardCommentFrm] textarea")) {
+    		<% if(loginMember == null) { %>
+   			loginAlert();
+   			<% } %>
+    	}
+    });
+    
+    // 이벤트 버블링을 이용한 폼 유효성 검사
+   	document.addEventListener("submit", (e) => {
+   		
+   		// 특정선택자와 매칭여부 matches
+   		if(e.target.matches("form[name=boardCommentFrm]")) {
+	   		<% if(loginMember == null) { %>
+	   			loginAlert();
+	   			e.preventDefault();
+	   			return;
+	   		<% } %>
+	   		
+	   		const frm = e.target;
+	   		const content = frm.content;
+	   		
+	   		if(!/^(.|\n)+$/.test(content.value)) {
+	   			alert('내용을 작성해주세요');
+	   			return;
+	   		}
+   			
+   		}
+   	});
+    
      
      const loginAlert = () => {
         alert("로그인 후 댓글작성이 가능합니다.");
